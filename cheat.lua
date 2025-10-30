@@ -287,6 +287,12 @@ local function indus()
 			game.Lighting.OutdoorAmbient = Color3.fromRGB(172, 160, 156)
 		end)
 	end)
+	lib.create:label(block2, "Отключить звук высого загрязнения")
+	lib.create:toggle(block2, false, function (state)
+		for _, tor in ipairs(workspace.Ambiences.HighPollution:getChildren()) do
+			tor.Volume = 0
+		end
+	end)
 end
 
 lib:init("saline v1") -- Запуск
