@@ -5,6 +5,45 @@ local UIS = game:GetService("UserInputService")
 --local login = http:JSONDecode(game:HttpGet("https://dev.uasalt.org/scripts/saline/v0.0.1/login?nickname=" .. game.Players.LocalPlayer.Name .. "&placeId=" .. game.PlaceId .. "&userid=" .. game.Players.LocalPlayer.UserId))
 local lib = {}
 lib.root = ""
+
+lib.create = {}
+lib.styles = {
+	global = {
+		text = Color3.fromRGB(210, 210, 210)
+	},
+	root = {
+		background = Color3.fromRGB(15, 15, 15),
+		border = Color3.fromRGB(30, 30, 30)
+	},
+	toggle = {
+		disabled = Color3.fromRGB(100, 100, 100),
+		enabled = Color3.fromRGB(17, 106, 222),
+		circle = Color3.fromRGB(255, 255, 255)
+	},
+	range = {
+		lineColor = Color3.fromRGB(100, 100, 100),
+		circle = Color3.fromRGB(255, 255, 255)
+	},
+	textBox = {
+		roundRadius = 12,
+		background = {15, 15, 15, 0.5} -- Цвет в формате RGBA (красный зеленый синий прозрачность)
+	},
+	label = {
+		font = Enum.Font.Roboto,
+		background = Color3.fromRGB(15, 15, 15)
+	},
+	dropbox = {
+		background = Color3.fromRGB(35, 35, 35),
+		border = Color3.fromRGB(60, 60, 60),
+		option = {
+			background = Color3.fromRGB(40, 40, 40)
+		}
+	},
+	input = {
+		background = Color3.fromRGB(15, 15, 15)
+	}
+}
+
 local state = {}
 local stateCount = {}
 local CurrentTab = ""
@@ -123,44 +162,6 @@ function lib:init(name)
 	padding.PaddingTop = UDim.new(0, 15)
 	padding.PaddingLeft = UDim.new(0, 5)
 end
-
-lib.create = {}
-lib.styles = {
-	global = {
-		text = Color3.fromRGB(210, 210, 210)
-	},
-	root = {
-		background = Color3.fromRGB(15, 15, 15),
-		border = Color3.fromRGB(30, 30, 30)
-	},
-	toggle = {
-		disabled = Color3.fromRGB(100, 100, 100),
-		enabled = Color3.fromRGB(17, 106, 222),
-		circle = Color3.fromRGB(255, 255, 255)
-	},
-	range = {
-		lineColor = Color3.fromRGB(100, 100, 100),
-		circle = Color3.fromRGB(255, 255, 255)
-	},
-	textBox = {
-		roundRadius = 12,
-		background = {15, 15, 15, 0.5} -- Цвет в формате RGBA (красный зеленый синий прозрачность)
-	},
-	label = {
-		font = Enum.Font.Roboto,
-		background = Color3.fromRGB(15, 15, 15)
-	},
-	dropbox = {
-		background = Color3.fromRGB(35, 35, 35),
-		border = Color3.fromRGB(60, 60, 60),
-		option = {
-			background = Color3.fromRGB(40, 40, 40)
-		}
-	},
-	input = {
-		background = Color3.fromRGB(15, 15, 15)
-	}
-}
 
 function lib.create:tab(name, onclick)
 	local tabs = lib.root.Main.Tabs -- Получение фрейма с вкладками
@@ -288,6 +289,8 @@ function lib.create:range(parent, min, max, value, callback)
 	stateCount[CurrentTab]['range'] += 1
 	if state[CurrentTab][name] ~= nil then
 		value = state[CurrentTab][name]
+	else
+		state[CurrentTab][name] = value
 	end
 	local content = lib.root.Main.Content
 	local line = Instance.new("Frame")
@@ -335,18 +338,20 @@ function lib.create:input(parent, placeholder, default, callback )
 	local content = lib.root.Main.Content
 	local name = tostring(stateCount[CurrentTab]['input'])
 	stateCount[CurrentTab]['input'] += 1
+	local text = default or ""
 	if state[CurrentTab][name] ~= nil then
-		default = state[CurrentTab][name]
+		text = state[CurrentTab][name]
+	else
+		state[CurrentTab][name] = text
 	end
 	local input = Instance.new('TextBox')
 	input.PlaceholderText = placeholder
 	input.Size = UDim2.fromOffset(100, 21)
-	input.Parent = parent or content
-	input.Text = default or ""
+	input.Text = text
 	input.TextXAlignment = Enum.TextXAlignment.Left
 	input.BackgroundColor3 = lib.styles.input.background
 	input.TextColor3 = lib.styles.global.text
-	local text = default or ""
+	input.Parent = parent or content
 	input.FocusLost:Connect(function ()
 		text = input.Text
 		state[CurrentTab][name] = text
@@ -391,6 +396,8 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 	stateCount[CurrentTab]['dropbox'] += 1
 	if state[CurrentTab]['dropbox'] ~= nil then
 		selected = state[CurrentTab]['dropbox']
+	else
+		state[CurrentTab][name] = selected
 	end
 	local block = Instance.new("TextButton")
 	block.Text = items[selected]
