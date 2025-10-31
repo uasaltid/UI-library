@@ -178,12 +178,12 @@ function lib.create:tab(name, onclick)
 	tab.Text = name
 	tab.TextXAlignment = Enum.TextXAlignment.Left
 	tab.TextSize = 12
-	if state[name] == nil then
-		state[name] = {}
-	end
 	local padding = Instance.new('UIPadding')
 	padding.Parent = tab
 	padding.PaddingLeft = UDim.new(0, 10)
+	if state[name] == nil then
+		state[name] = {}
+	end
 	
 	tabs.CanvasSize = UDim2.fromOffset(0, 25 * (#tabs:GetChildren() - 1))
 	
@@ -200,12 +200,7 @@ function lib.create:tab(name, onclick)
 			end
 		end
 		CurrentTab = name
-		stateCount[CurrentTab] = {
-			toggle = 0,
-			dropbox = 0,
-			range = 0,
-			input = 0
-		}
+		stateCount = 0
 		onclick()
 		content.CanvasSize = UDim2.fromOffset(0, 27 * (#content:GetChildren() - 2))
 	end)
@@ -215,13 +210,8 @@ function lib.create:tab(name, onclick)
 				elem:Destroy()
 			end
 		end
+		stateCount = 0
 		CurrentTab = name
-		stateCount[CurrentTab] = {
-			toggle = 0,
-			dropbox = 0,
-			range = 0,
-			input = 0
-		}
 		onclick()
 		content.CanvasSize = UDim2.fromOffset(0, 27 * (#content:GetChildren() - 2))
 	end
@@ -231,9 +221,11 @@ function lib.create:toggle(parent, enabled, callback)
 	if enabled == nil then enabled = false end
 	local content = lib.root.Main.Content
 	local toggleBack = Instance.new("ImageButton", content)
-	local name = tostring(stateCount[CurrentTab]['toggle'])
-	stateCount[CurrentTab]['toggle'] += 1
-	if state[CurrentTab][name] ~= nil then
+	local name = stateCount .. "Toggle"
+	stateCount += 1
+	if state[CurrentTab][name] == nil then
+		state[CurrentTab][name] = enabled
+	else
 		enabled = state[CurrentTab][name]
 	end
 	if enabled then
@@ -285,12 +277,12 @@ end
 
 function lib.create:range(parent, min, max, value, callback)
 	if value == nil then value = min end
-	local name = tostring(stateCount[CurrentTab]['range'])
-	stateCount[CurrentTab]['range'] += 1
-	if state[CurrentTab][name] ~= nil then
-		value = state[CurrentTab][name]
-	else
+	local name = stateCount
+	stateCount += 1
+	if state[CurrentTab][name] == nil then
 		state[CurrentTab][name] = value
+	else
+		value = state[CurrentTab][name]
 	end
 	local content = lib.root.Main.Content
 	local line = Instance.new("Frame")
@@ -335,27 +327,28 @@ function lib.create:range(parent, min, max, value, callback)
 end
 
 function lib.create:input(parent, placeholder, default, callback )
+	if default == nil then default = "" end
+	default = tostring(default)
 	local content = lib.root.Main.Content
-	local name = tostring(stateCount[CurrentTab]['input'])
-	stateCount[CurrentTab]['input'] += 1
+	local name = stateCount
+	stateCount += 1
 	local text = default or ""
-	if state[CurrentTab][name] ~= nil then
-		text = state[CurrentTab][name]
-	else
-		state[CurrentTab][name] = text
+	if state[CurrentTab][name] == nil then
+		state[CurrentTab][name] = tostring(default or "")
 	end
 	local input = Instance.new('TextBox')
 	input.PlaceholderText = placeholder
 	input.Size = UDim2.fromOffset(100, 21)
-	input.Text = text
+	input.Text = state[CurrentTab][name]
 	input.TextXAlignment = Enum.TextXAlignment.Left
 	input.BackgroundColor3 = lib.styles.input.background
 	input.TextColor3 = lib.styles.global.text
 	input.Parent = parent or content
-	input.FocusLost:Connect(function ()
-		text = input.Text
-		state[CurrentTab][name] = text
-		callback(text)
+	input.FocusLost:Connect(function()
+		state[CurrentTab][name] = input.Text
+		if callback then
+			callback(input.Text)
+		end
 	end)
 	input.Focused:Connect(function () if input.Text == "" then input.Text = text end end)
 end
@@ -392,15 +385,15 @@ end
 
 function lib.create:dropbox(parent, items, selected:number, onchange)
 	if not selected then selected = 1 end
-	local name = tostring(stateCount[CurrentTab]['dropbox'])
-	stateCount[CurrentTab]['dropbox'] += 1
-	if state[CurrentTab]['dropbox'] ~= nil then
-		selected = state[CurrentTab]['dropbox']
-	else
+	local name = stateCount
+	if state[CurrentTab][name] == nil then
 		state[CurrentTab][name] = selected
+	else
+		selected = state[CurrentTab][name]
 	end
+	stateCount += 1
 	local block = Instance.new("TextButton")
-	block.Text = items[selected]
+	block.Text = tostring(items[selected])
 	block.BorderColor3 = lib.styles.dropbox.border
 	block.BackgroundColor3 = lib.styles.dropbox.background
 	block.TextColor3 = lib.styles.global.text
