@@ -8,6 +8,8 @@ if not status then
 end
 
 local freecamEnabled = false
+local RunService = game:GetService("RunService")
+local state = {}
 
 function freecam () -- Freecam script from https://devforum.roblox.com/t/how-to-make-an-easy-freecam-script-mobile-support/1972016
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
@@ -176,6 +178,9 @@ function world()
 	end)
 end
 
+local gravity = workspace.Gravity
+local flingEnabled = false
+
 local function bodymodify() -- название функции таб потому что ты ее указал в 173 строк
 	local player = game.Players.LocalPlayer
 	local players = game:GetService("Players")
@@ -255,10 +260,58 @@ local function bodymodify() -- название функции таб потом
 			end
 		end
 	end)
-	
+	local block5 = lib.create:block()
+	lib.create:label(block5, "Нулевая гравитация")
+	lib.create:toggle(block5, false, function (state)
+		if state then
+			workspace.Gravity = 0
+
+			local humanoid = player.Character:FindFirstChildWhichIsA("Humanoid")
+			humanoid.Sit = true
+			task.wait(0.1)
+			humanoid.RootPart.CFrame = humanoid.RootPart.CFrame * CFrame.Angles(math.pi * 0.5, 0, 0)
+			for _, v in ipairs(humanoid:GetPlayingAnimationTracks()) do
+				v:Stop()
+			end
+		else
+			workspace.Gravity = gravity
+		end
+	end)
+	local block6 = lib.create:block()
+	lib.create:label(block6, "Fling")
+	lib.create:toggle(block6, false, function (state)
+		if state then
+			flingEnabled = true
+			local function fling()
+				local lp = players.LocalPlayer
+				local c, hrp, vel, movel = nil, nil, nil, 0.1
+
+				while flingEnabled do
+					RunService.Heartbeat:Wait()
+					c = lp.Character
+					hrp = c and c:FindFirstChild("HumanoidRootPart")
+
+					if hrp then
+						vel = hrp.Velocity
+						hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+						RunService.RenderStepped:Wait()
+						hrp.Velocity = vel
+						RunService.Stepped:Wait()
+						hrp.Velocity = vel + Vector3.new(0, movel, 0)
+						movel = -movel
+					end
+				end
+			end
+			local flingThread = coroutine.create(fling)
+			coroutine.resume(flingThread)
+		else
+			flingEnabled = false
+		end
+	end)
 end
 
 local function indus()
+	local plr = game.Players.LocalPlayer
 	local smoke = ""
 	local block1 = lib.create:block()
 	lib.create:label(block1, "Отключить туман")
@@ -288,9 +341,12 @@ local function indus()
 		end)
 	end)
 	local block3 = lib.create:block()
-	lib.create:label(block3, "Отключить звук высого загрязнения")
+	lib.create:label(block3, "Отключить звук загрязнения")
 	lib.create:toggle(block3, false, function (state)
 		for _, tor in ipairs(workspace.Ambiences.HighPollution:getChildren()) do
+			tor.Volume = 0
+		end
+		for _, tor in ipairs(workspace.Ambiences.LowPollution:getChildren()) do
 			tor.Volume = 0
 		end
 	end)
