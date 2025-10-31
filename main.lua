@@ -5,6 +5,9 @@ local UIS = game:GetService("UserInputService")
 --local login = http:JSONDecode(game:HttpGet("https://dev.uasalt.org/scripts/saline/v0.0.1/login?nickname=" .. game.Players.LocalPlayer.Name .. "&placeId=" .. game.PlaceId .. "&userid=" .. game.Players.LocalPlayer.UserId))
 local lib = {}
 lib.root = ""
+local state = {}
+local stateCount = {}
+local CurrentTab = ""
 
 function lib:init(name)
 	if not name then name = "Untitled" end
@@ -174,6 +177,9 @@ function lib.create:tab(name, onclick)
 	tab.Text = name
 	tab.TextXAlignment = Enum.TextXAlignment.Left
 	tab.TextSize = 12
+	if state[name] == nil then
+		state[name] = {}
+	end
 	local padding = Instance.new('UIPadding')
 	padding.Parent = tab
 	padding.PaddingLeft = UDim.new(0, 10)
@@ -192,6 +198,13 @@ function lib.create:tab(name, onclick)
 				elem:Destroy()
 			end
 		end
+		CurrentTab = name
+		stateCount[CurrentTab] = {
+			toggle = 0,
+			dropbox = 0,
+			range = 0,
+			input = 0
+		}
 		onclick()
 		content.CanvasSize = UDim2.fromOffset(0, 27 * (#content:GetChildren() - 2))
 	end)
@@ -201,6 +214,13 @@ function lib.create:tab(name, onclick)
 				elem:Destroy()
 			end
 		end
+		CurrentTab = name
+		stateCount[CurrentTab] = {
+			toggle = 0,
+			dropbox = 0,
+			range = 0,
+			input = 0
+		}
 		onclick()
 		content.CanvasSize = UDim2.fromOffset(0, 27 * (#content:GetChildren() - 2))
 	end
@@ -210,6 +230,11 @@ function lib.create:toggle(parent, enabled, callback)
 	if enabled == nil then enabled = false end
 	local content = lib.root.Main.Content
 	local toggleBack = Instance.new("ImageButton", content)
+	local name = tostring(stateCount[CurrentTab]['toggle'])
+	stateCount[CurrentTab]['toggle'] += 1
+	if state[CurrentTab][name] ~= nil then
+		enabled = state[CurrentTab][name]
+	end
 	if enabled then
 		toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
 	else
@@ -220,7 +245,6 @@ function lib.create:toggle(parent, enabled, callback)
 	cornerb.Parent = toggleBack
 	toggleBack.Size = UDim2.new(0, 45, 0, 21)
 	toggleBack.BorderSizePixel = 0
-	--toggleBack.Position = UDim2.new(relX, relY)
 	toggleBack.ZIndex = 3
 
 	local circle = Instance.new("Frame")
@@ -241,6 +265,7 @@ function lib.create:toggle(parent, enabled, callback)
 	toggleBack.MouseButton1Click:Connect(function ()
 		enabled = not enabled
 		toggleBack:SetAttribute("enabled", enabled)
+		state[CurrentTab][name] = enabled
 		if enabled then
 			toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
 		else
@@ -259,6 +284,11 @@ end
 
 function lib.create:range(parent, min, max, value, callback)
 	if value == nil then value = min end
+	local name = tostring(stateCount[CurrentTab]['range'])
+	stateCount[CurrentTab]['range'] += 1
+	if state[CurrentTab][name] ~= nil then
+		value = state[CurrentTab][name]
+	end
 	local content = lib.root.Main.Content
 	local line = Instance.new("Frame")
 	line.Size = UDim2.fromOffset(100, 3)
@@ -293,6 +323,7 @@ function lib.create:range(parent, min, max, value, callback)
 			circle.Position = UDim2.fromOffset(x - 6.5, -6.5)
 			local percent = math.clamp(x / line.AbsoluteSize.X, 0, 1)
 			local value = min + (max - min) * percent
+			state[CurrentTab][name] = value
 			callback(value)
 		end
 	end)
@@ -302,6 +333,11 @@ end
 
 function lib.create:input(parent, placeholder, default, callback )
 	local content = lib.root.Main.Content
+	local name = tostring(stateCount[CurrentTab]['input'])
+	stateCount[CurrentTab]['input'] += 1
+	if state[CurrentTab][name] ~= nil then
+		default = state[CurrentTab][name]
+	end
 	local input = Instance.new('TextBox')
 	input.PlaceholderText = placeholder
 	input.Size = UDim2.fromOffset(100, 21)
@@ -313,6 +349,7 @@ function lib.create:input(parent, placeholder, default, callback )
 	local text = default or ""
 	input.FocusLost:Connect(function ()
 		text = input.Text
+		state[CurrentTab][name] = text
 		callback(text)
 	end)
 	input.Focused:Connect(function () if input.Text == "" then input.Text = text end end)
@@ -350,6 +387,11 @@ end
 
 function lib.create:dropbox(parent, items, selected:number, onchange)
 	if not selected then selected = 1 end
+	local name = tostring(stateCount[CurrentTab]['dropbox'])
+	stateCount[CurrentTab]['dropbox'] += 1
+	if state[CurrentTab]['dropbox'] ~= nil then
+		selected = state[CurrentTab]['dropbox']
+	end
 	local block = Instance.new("TextButton")
 	block.Text = items[selected]
 	block.BorderColor3 = lib.styles.dropbox.border
@@ -385,7 +427,11 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 			option.BackgroundColor3 = lib.styles.dropbox.option.background
 			option.Parent = select
 			option.MouseButton1Click:Connect(function()
+				select:Destroy()
 				block.Text = title
+				if state[CurrentTab][name] == nil then
+					state[CurrentTab][name] = selected
+				end
 				onchange(index, title)
 			end)
 			game.Players.LocalPlayer:GetMouse().Button1Up:Connect(function() select:Destroy() end)
