@@ -191,7 +191,8 @@ local function bodymodify() -- название функции таб потом
 	end)
 	-- эт я щас свое сделаю + еще один тебе пример
 	local block2 = lib.create:block()
-	lib.create:input(block2, "Высота прыжка", math.floor(player.Character.Humanoid.JumpHeight), function (val)
+	lib.create:label(block2, "Высота прыжка")
+	lib.create:input(block2, "", math.floor(player.Character.Humanoid.JumpHeight), function (val)
 		player.Character.Humanoid.JumpHeight = val -- ставим высоту прыжка
 	end)
 	local block3 = lib.create:block()
