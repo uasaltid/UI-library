@@ -12,6 +12,7 @@ local RunService = game:GetService("RunService")
 local state = {}
 local antifling = false
 local radioallowed = true
+local noclip = false
 
 local placeId = {
 	MurderMystery = 142823291 
@@ -342,6 +343,28 @@ local function bodymodify() -- название функции таб потом
 	lib.create:label(block7, "Anti-fling")
 	lib.create:toggle(block7, antifling, function (state)
 		antifling = state
+	end)
+	local block8 = lib.create:block()
+	lib.create:label(block8, "No-clip")
+	lib.create:toggle(block8, noclip, function (state)
+		noclip = state
+		if noclip then
+	        RunService.Stepped:Connect(function()
+	            if noclip and Character then
+	                for _, part in pairs(Character:GetDescendants()) do
+	                    if part:IsA("BasePart") then
+	                        part.CanCollide = false
+	                    end
+	                end
+	            end
+	        end)
+	    else
+	        for _, part in pairs(Character:GetDescendants()) do
+	            if part:IsA("BasePart") then
+	                part.CanCollide = true
+	            end
+	        end
+	    end
 	end)
 end
 
