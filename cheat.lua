@@ -415,7 +415,7 @@ lib.create:tab("Мир", world)
 lib.create:tab("Модификатор тела", bodymodify)
 if game.PlaceId == 9312740628 then
 	lib.create:tab("Industrialist", indus)
-elseif game.PlaceId == PlaceId.MurderMystery then
+elseif game.PlaceId == PlaceId["MurderMystery"] then
 	lib.create:tab("MurderMystery2", murder)
 end
 lib.create:tab("Другое", other)
