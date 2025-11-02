@@ -395,7 +395,7 @@ local function other()
 	end
 	lib.create:dropbox(block1, box, 1, function (_, name)
 		if name == box[1] then return end
-		Player.Character.HumanoidRootPart.Position = Players:FindFirstChild(name).Character.HumanoidRootPart.Position
+		Player.Character.HumanoidRootPart.CFrame  = Players:FindFirstChild(name).Character.HumanoidRootPart.CFrame + Vector3.new(0, 2, 0)
 	end)
 end
 
