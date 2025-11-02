@@ -40,7 +40,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-for plr in ipairs(Players:GetChildren())
+for plr in ipairs(Players:GetChildren()) do
 	
 end
 
