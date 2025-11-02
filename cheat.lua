@@ -347,6 +347,8 @@ local function bodymodify() -- название функции таб потом
 	local block8 = lib.create:block()
 	lib.create:label(block8, "No-clip")
 	lib.create:toggle(block8, noclip, function (state)
+		local Player = game.Players.LocalPlayer
+		local Character = Player.Character or Player.CharacterAdded:Wait()
 		noclip = state
 		if noclip then
 	        RunService.Stepped:Connect(function()
