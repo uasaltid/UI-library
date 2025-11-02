@@ -10,6 +10,30 @@ end
 local freecamEnabled = false
 local RunService = game:GetService("RunService")
 local state = {}
+local antifling = false
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Player = Players.LocalPlayer
+ 
+RunService.Stepped:Connect(function()
+	if not antifling then return end
+    for _, CoPlayer in pairs(Players:GetChildren()) do
+        if CoPlayer ~= Player and CoPlayer.Character then
+            for _, Part in pairs(CoPlayer.Character:GetChildren()) do
+                if Part.Name == "HumanoidRootPart" then
+                    Part.CanCollide = false
+                end
+            end
+        end
+    end
+ 
+    for _, Accessory in pairs(workspace:GetChildren()) do
+        if Accessory:IsA("Accessory") and Accessory:FindFirstChildWhichIsA("Part") then
+            Accessory:FindFirstChildWhichIsA("Part"):Destroy()
+        end
+    end
+end)
 
 function freecam () -- Freecam script from https://devforum.roblox.com/t/how-to-make-an-easy-freecam-script-mobile-support/1972016
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
@@ -308,6 +332,11 @@ local function bodymodify() -- название функции таб потом
 		else
 			flingEnabled = false
 		end
+	end)
+	local block7 = lib.create:block()
+	lib.create:label(block7, "Anti-fling")
+	lib.create:toggle(block7, antifling, function (state)
+		antifling = state
 	end)
 end
 
