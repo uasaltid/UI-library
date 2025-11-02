@@ -40,10 +40,6 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-for plr in ipairs(Players:GetChildren()) do
-	
-end
-
 function freecam () -- Freecam script from https://devforum.roblox.com/t/how-to-make-an-easy-freecam-script-mobile-support/1972016
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
 	local cam = workspace.CurrentCamera
