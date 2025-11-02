@@ -11,9 +11,10 @@ local freecamEnabled = false
 local RunService = game:GetService("RunService")
 local state = {}
 local antifling = false
+local radioallowed = true
 
 local placeId = {
-	MurderMystery = 0
+	MurderMystery = 142823291 
 }
 
 local Players = game:GetService("Players")
@@ -38,6 +39,10 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
+
+for plr in ipairs(Players:GetChildren())
+	
+end
 
 function freecam () -- Freecam script from https://devforum.roblox.com/t/how-to-make-an-easy-freecam-script-mobile-support/1972016
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
@@ -399,6 +404,14 @@ local function other()
 	end)
 end
 
+local function murder()
+	local block1 = lib.create:block()
+	lib.create:label(block1, "Радио")
+	lib.create:toggle(block1, true, function (state)
+		radioallowed = state
+	end)
+end
+
 lib:init("saline v1") -- Запуск
 
 lib.create:tab("Камера", camera)
@@ -406,6 +419,8 @@ lib.create:tab("Мир", world)
 lib.create:tab("Модификатор тела", bodymodify)
 if game.PlaceId == 9312740628 then
 	lib.create:tab("Industrialist", indus)
+elseif game.PlaceId == PlaceId.MurderMystery then
+	lib.create:tab("MurderMystery2", murder)
 end
 lib.create:tab("Другое", other)
 --Discord  Sh1z0v
