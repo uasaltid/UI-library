@@ -12,10 +12,14 @@ local RunService = game:GetService("RunService")
 local state = {}
 local antifling = false
 
+local placeId = {
+	MurderMystery = 0
+}
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Player = Players.LocalPlayer
- 
+
 RunService.Stepped:Connect(function()
 	if not antifling then return end
     for _, CoPlayer in pairs(Players:GetChildren()) do
@@ -382,6 +386,19 @@ local function indus()
 	end)
 end
 
+local function other()
+	local block1 = lib.create:block()
+	lib.create:label(block1, "Телепорт к ")
+	local box = {"[Выберите]"}
+	for _, player in ipairs(Players:GetChildren()) do
+		table.insert(box, player.Name)
+	end
+	lib.create:dropbox(block1, box, 1, function (_, name)
+		if name == box[1] then return end
+		Player.Character.HumanoidRootPart.Position = Players:FindFirstChild(name).Character.HumanoidRootPart.Position
+	end)
+end
+
 lib:init("saline v1") -- Запуск
 
 lib.create:tab("Камера", camera)
@@ -390,6 +407,7 @@ lib.create:tab("Модификатор тела", bodymodify)
 if game.PlaceId == 9312740628 then
 	lib.create:tab("Industrialist", indus)
 end
+lib.create:tab("Другое", other)
 --Discord  Sh1z0v
 --Discord  uasalt
 --Telegram uasalt
