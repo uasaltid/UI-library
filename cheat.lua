@@ -198,6 +198,12 @@ function camera()
 	lib.create:range(block4, 0.5, 512, math.floor(plr.CameraMaxZoomDistance), function (v)
 		plr.CameraMaxZoomDistance = v
 	end)
+
+	local block5 = lib.create:block()
+	lib.create:label(block5, "Поле зрения")
+	lib.create:range(block5, 60, 90, workspace.CurrentCamera.FieldOfView, function(v)
+		workspace.CurrentCamera.FieldOfView = v
+	end)
 end
 
 function world()
