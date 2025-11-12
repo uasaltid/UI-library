@@ -1,3 +1,4 @@
+local HttpService = game:GetService("HttpService")
 local http = game:GetService('HttpService')
 local tweenService = game:GetService('TweenService')
 local UIS = game:GetService("UserInputService")
@@ -47,6 +48,14 @@ lib.styles = {
 local state = {}
 local stateCount = {}
 local CurrentTab = ""
+local configName = "com.uasalt.uilib"
+
+local function readcfg()
+	return HttpService:JSONDecode(readfile(configName .. ".json"))
+end
+local function writecfg(data)
+	readfile(configName .. ".json", HttpService:JSONEncode(data))
+end
 
 function lib:init(name)
 	if not name then name = "Untitled" end
