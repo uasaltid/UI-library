@@ -56,3 +56,18 @@ value Значение по умолчанию
 callback Вызывается если изменена позиция  
 )
 ```
+## Пример
+```
+local lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/uasaltid/UI-library/refs/heads/main/main.lua"))()
+
+lib:init("Example")
+
+function camera()
+  local block = lib.create:block()
+  lib.create:label(block, "FOV")
+  lib.create:range(block, 20, 90, workspace.CurrentCamera.FieldOfView, function (fov)
+    workspace.CurrentCamera.FieldOfView = fov
+  end)
+end
+
+lib.create:tab("Камера", camera)
