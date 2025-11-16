@@ -42,6 +42,12 @@ lib.styles = {
 	},
 	input = {
 		background = Color3.fromRGB(15, 15, 15)
+	},
+	block = {
+		background = Color3.fromRGB(15, 15, 15)
+	},
+	tab = {
+		hoverBackground = Color3.fromRGB(20, 20, 20)
 	}
 }
 
@@ -177,8 +183,8 @@ function lib.create:tab(name, onclick)
 	local content = lib.root.Main.Content
 	local tab = Instance.new("TextButton") -- Создание кнопки для вкладки
 	tab.Parent = tabs
-	tab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-	tab.BackgroundTransparency = 1
+	tab.BackgroundColor3 = lib.styles.tab.hoverBackground
+	tab.BackgroundTransparency = 0
 	tab.Transparency = 0.3
 	tab.BorderSizePixel = 0
 	tab.Name = name
