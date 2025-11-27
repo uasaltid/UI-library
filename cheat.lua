@@ -383,13 +383,14 @@ local function indus()
 	lib.create:label(block1, "Отключить туман")
 	lib.create:toggle(block1, false, function(state)
 		if state then
-			if not smoke then smoke = game.Lighting.Polution:Clone() end
-			if game.Lighting.Polution then
-				game.Lighting.Polution:Destroy()
+			if not smoke then smoke = game.Lighting.PollutionAtmosphere:Clone() end
+			if game.Lighting.PollutionAtmosphere then
+				game.Lighting.PollutionAtmosphere:Destroy()
 			end
 		else
 			if smoke then
-				smoke:Clone().Parent = game.Lighting
+				smoke.Parent = game.Lighting
+				smoke = nil
 			end
 		end
 	end)
