@@ -398,13 +398,13 @@ local function indus()
 	local block2 = lib.create:block()
 	lib.create:label(block2, "Всегда светло")
 	lib.create:toggle(block2, false, function (state)
-		game.Lighting.OutdoorAmbient = Color3.fromRGB(172, 160, 156)
+		game.Lighting.ExposureCompensation = 1
 		game.Lighting.ClockTime = 14.5
 		game.Lighting:GetPropertyChangedSignal('ClockTime'):Connect(function()
 			game.Lighting.ClockTime = 14.5
 		end)
-		game.Lighting:GetPropertyChangedSignal('OutdoorAmbient'):Connect(function()
-			game.Lighting.OutdoorAmbient = Color3.fromRGB(172, 160, 156)
+		game.Lighting:GetPropertyChangedSignal('ExposureCompensation'):Connect(function()
+			game.Lighting.ExposureCompensation = 1
 		end)
 	end)
 	local block3 = lib.create:block()
