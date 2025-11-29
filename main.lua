@@ -48,6 +48,10 @@ lib.styles = {
 	},
 	tab = {
 		hoverBackground = Color3.fromRGB(20, 20, 20)
+	},
+	button = {
+		textColor = Color3.fromRGB(210, 210, 210),
+		background = Color3.fromRGB(15, 15, 15)
 	}
 }
 
@@ -73,7 +77,7 @@ function lib:init(name)
 	lib.root.IgnoreGuiInset = true
 	local main = Instance.new("Frame")
 	main.Name = "Main"
-	main.Position = size
+	main.Position = getfenv().lastWindowPos or size
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
@@ -113,7 +117,9 @@ function lib:init(name)
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if GUIMOVING then
 			local mouse = game.Players.LocalPlayer:GetMouse()
-			main.Position = UDim2.new(0, mouse.X - size.X.Offset / 2, 0, mouse.Y - -titleBar.Size.Y.Offset * 2)
+			local position = UDim2.new(0, mouse.X - size.X.Offset / 2, 0, mouse.Y - -titleBar.Size.Y.Offset * 2)
+			main.Position = position
+			getfenv().lastWindowPos = position
 		end
 	end)
 	local close = Instance.new("ImageButton") -- Закрытие
@@ -122,7 +128,7 @@ function lib:init(name)
 	close.BorderSizePixel = 0
 	close.Size = UDim2.new(0, titleBar.Size.Y.Offset, 0, titleBar.Size.Y.Offset)
 	close.Position = UDim2.new(0, titleBar.Size.X.Offset - titleBar.Size.Y.Offset, 0)
-	close.MouseButton1Click:Connect(function () lib.root:Destroy() end) 
+	close.MouseButton1Click:Connect(function () lib:Destroy() end) 
 	close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 	close.BackgroundTransparency = 1
 	close.MouseEnter:Connect(function () close.BackgroundTransparency = 0 end)
@@ -184,8 +190,8 @@ function lib.create:tab(name, onclick)
 	local tab = Instance.new("TextButton") -- Создание кнопки для вкладки
 	tab.Parent = tabs
 	tab.BackgroundColor3 = lib.styles.tab.hoverBackground
-	tab.BackgroundTransparency = 0
-	tab.Transparency = 0.3
+	tab.BackgroundTransparency = 1
+	tab.Transparency = 0
 	tab.BorderSizePixel = 0
 	tab.Name = name
 	tab.Size = UDim2.new(1, 0, 0, 25)
@@ -217,7 +223,7 @@ function lib.create:tab(name, onclick)
 		CurrentTab = name
 		stateCount = 0
 		onclick()
-		content.CanvasSize = UDim2.fromOffset(0, 27 * (#content:GetChildren() - 2))
+		content.CanvasSize = UDim2.fromOffset(0, 28.5 * (#content:GetChildren() - 2))
 	end)
 	if #tabs:GetChildren() == 2 then
 		for _, elem in ipairs(content:GetChildren()) do
@@ -228,8 +234,18 @@ function lib.create:tab(name, onclick)
 		stateCount = 0
 		CurrentTab = name
 		onclick()
-		content.CanvasSize = UDim2.fromOffset(0, 27 * (#content:GetChildren() - 2))
+		content.CanvasSize = UDim2.fromOffset(0, 28 * (#content:GetChildren() - 2))
 	end
+	return {
+		change = {
+			name = function (text)
+				tab.Text = text
+			end,
+			onclick = function (func)
+				onclick = func
+			end
+		}
+	}
 end
 
 function lib.create:toggle(parent, enabled, callback)
@@ -288,6 +304,27 @@ function lib.create:toggle(parent, enabled, callback)
 		)
 		callback(enabled)
 	end)
+	return {
+		change = {
+			enabled = function (v)
+				if v == nil then v = not enabled end
+				enabled = v
+				toggleBack:SetAttribute("enabled", v)
+				state[CurrentTab][name] = v
+
+				toggleBack.BackgroundColor3 = v and lib.styles.toggle.enabled
+											or       lib.styles.toggle.disabled
+
+				circle:TweenPosition(
+					v and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
+					Enum.EasingDirection.Out,
+					Enum.EasingStyle.Quad,
+					0.2,
+					true
+				)
+			end
+		}
+	}
 end
 
 function lib.create:range(parent, min, max, value, callback)
@@ -366,6 +403,19 @@ function lib.create:input(parent, placeholder, default, callback )
 		end
 	end)
 	input.Focused:Connect(function () if input.Text == "" then input.Text = text end end)
+	return {
+		change = {
+			text = function (text)
+				input.Text = text
+			end,
+			onchange = function (func)
+				callback = func
+			end,
+			placeholder = function (text)
+				input.PlaceholderText = text
+			end
+		}
+	}
 end
 
 function lib.create:label(parent, text, size:number, font, XAlignment)
@@ -461,6 +511,24 @@ function lib.create:image(parent, url)
 	image.Size = UDim2.fromOffset(21, 21)
 	image.BackgroundTransparency = 1
 	image.Parent = parent
+end
+
+function lib.create:button(parent, text, onclick)
+	local button = Instance.new("TextButton")
+	button.Text = text
+	button.Size = UDim2.fromOffset(80, 27)
+	button.TextColor3 = lib.styles.button.textColor
+	button.BackgroundColor3 = lib.styles.button.background
+	button.Parent = parent
+	button.MouseButton1Click:Connect(onclick)
+end
+
+function lib:Destroy()
+	lib.root:Destroy()
+	lib.root = ""
+	state = {}
+	stateCount = {}
+	CurrentTab = ""
 end
 
 return lib
