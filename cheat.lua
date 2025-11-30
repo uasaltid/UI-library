@@ -746,7 +746,7 @@ elseif game.placeId == 7871169780 then
 	lib.create:tab("Minesweeper", minesweeper)
 end
 lib.create:tab("Другое", other)
---Discord  Sh1z0v
 --Discord  uasalt
 --Telegram uasalt
---Group https://discord.gg/ttQMyKvKt6
+--By uasaltid
+--Site id.uasalt.org
