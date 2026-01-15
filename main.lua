@@ -8,6 +8,10 @@ local lib = {}
 lib.root = ""
 
 lib.create = {}
+lib.binds = {}
+lib.config = {}
+lib.config.game = {}
+lib.config.global = {}
 lib.styles = {
 	global = {
 		text = Color3.fromRGB(210, 210, 210)
@@ -59,17 +63,53 @@ local state = {}
 local stateCount = {}
 local CurrentTab = ""
 local configName = "com.uasalt.uilib"
+local configGameName = configName .. "." .. game.GameId
+local Players = game:GetService("Players")
+local configGlobal = {
+	binds = {}
+}
+local configGame = {
+	binds = {}
+}
 
-local function readcfg()
-	return HttpService:JSONDecode(readfile(configName .. ".json"))
+local function readcfg(priv)
+	local cfgname
+	if priv == true then
+		cfgname = configGameName
+	else
+		cfgname = configName
+	end
+	local success, result = pcall(function()
+		return HttpService:JSONDecode(readfile(cfgname .. ".json"))
+	end)
+	if not success then writefile(cfgname .. ".json", "{}"); readcfg(priv) end
+	return result
 end
-local function writecfg(data)
-	readfile(configName .. ".json", HttpService:JSONEncode(data))
+local function updatecfg(priv)
+	local cfgname
+	if priv == true then
+		cfgname = configGameName
+	else
+		cfgname = configName
+	end
+	writefile(cfgname .. ".json", HttpService:JSONEncode(data))
 end
+
+configGlobal = readcfg(false)
+configGame = readcfg(true)
+lib.config.global.update = function () updatecfg(false) end
+lib.config.global.cfg = configGlobal
+lib.config.game.update = function () updatecfg(true) end
+lib.config.game.cfg = configGame
 
 function lib:init(name)
 	if not name then name = "Untitled" end
-	local size = UDim2.new(0, 500, 0, 300)
+	if Players.LocalPlayer == nil then
+		Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+		Players.LocalPlayer.CharacterAdded:Wait()
+	end
+	local size = UDim2.fromOffset(unpack(configGame.size or configGlobal.size or { 500, 300 }))
+	local positionWindow = UDim2.fromOffset(unpack(configGame.position or configGlobal.position or { 500, 300 }))
 	lib.root = Instance.new("ScreenGui") -- Создание окна
 	lib.root.Name = name
 	lib.root.ResetOnSpawn = false
@@ -113,13 +153,17 @@ function lib:init(name)
 	--Действия с окном
 	local GUIMOVING = false -- Перетаскивание
 	titleBar.MouseButton1Down:Connect(function () GUIMOVING = true; main.BackgroundTransparency = 0.4 end)
-	titleBar.MouseButton1Up:Connect(function () GUIMOVING = false; main.BackgroundTransparency = 0 end)
+	titleBar.MouseButton1Up:Connect(function ()
+		GUIMOVING = false
+		main.BackgroundTransparency = 0
+		lib.config.game.cfg.position = { main.Position.X.Offset, main.Position.Y.Offset }
+		lib.config.game.update()
+	end)
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if GUIMOVING then
 			local mouse = game.Players.LocalPlayer:GetMouse()
 			local position = UDim2.new(0, mouse.X - size.X.Offset / 2, 0, mouse.Y - -titleBar.Size.Y.Offset * 2)
 			main.Position = position
-			getfenv().lastWindowPos = position
 		end
 	end)
 	local close = Instance.new("ImageButton") -- Закрытие
@@ -138,7 +182,7 @@ function lib:init(name)
 	minimaze.Parent = titleBar
 	minimaze.TextSize = 21
 	minimaze.Text = "-"
-	minimaze.Name = "Close"
+	minimaze.Name = "Collapse"
 	minimaze.BorderSizePixel = 0
 	minimaze.Size = UDim2.new(0, titleBar.Size.Y.Offset, 0, titleBar.Size.Y.Offset)
 	minimaze.Position = UDim2.new(0, titleBar.Size.X.Offset - titleBar.Size.Y.Offset - close.Size.X.Offset, 0)
@@ -150,13 +194,15 @@ function lib:init(name)
 
 	-- Вкладки
 	local tabs = Instance.new("ScrollingFrame") 
-	tabs.Parent = main -- добавление в меин фрейм
-	tabs.Position = UDim2.new(0, 0, 0, titleBar.Size.Y.Offset) -- Позиция под тайтл баром
-	tabs.Size = UDim2.new(0, size.X.Offset / 3, 0, size.Y.Offset - titleBar.Size.Y.Offset) 
-	tabs.BackgroundTransparency = 1 -- Прозрачность фона
-	tabs.Name = "Tabs" -- Назваяёние в мейне
-	tabs.BorderSizePixel = 0 -- Ставлю границу на 0 что бы отключить и не было обводки
-	tabs.ScrollBarThickness = 5 -- размер хуйни для скролла
+	tabs.Parent = main
+	tabs.Position = UDim2.new(0, 0, 0, titleBar.Size.Y.Offset)
+	tabs.Size = UDim2.fromOffset(size.X.Offset / 3, size.Y.Offset - titleBar.Size.Y.Offset) 
+	tabs.BackgroundTransparency = 1
+	tabs.Name = "Tabs"
+	tabs.BorderSizePixel = 0
+	tabs.ScrollBarThickness = 5
+	tabs.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	tabs.CanvasSize = UDim2.fromOffset(0, 0)
 	local separator = Instance.new("Frame") -- Создаю разделитель что бы не было слитно
 	separator.Parent = main
 	separator.BackgroundColor3 = lib.styles.root.border
@@ -166,7 +212,9 @@ function lib:init(name)
 	separator.Size = UDim2.new(0, 1, 0, size.Y.Offset - titleBar.Size.Y.Offset) -- Настраиваю размеры что бы он был тонким и на весь меин по высоте
 	separator.Name = "Separator"
 	separator.BorderSizePixel = 0
-	Instance.new("UIListLayout").Parent = tabs
+	local yurta = Instance.new("UIListLayout")
+	yurta.SortOrder = Enum.SortOrder.LayoutOrder
+	yurta.Parent = tabs
 
 	-- Контент                                             
 	local content = Instance.new("ScrollingFrame") -- Создаю фрейм что бы можно было листать и дохуя параметров добавлять
@@ -177,11 +225,14 @@ function lib:init(name)
 	content.BackgroundTransparency = 1
 	content.BorderSizePixel = 0
 	content.ScrollBarThickness = 5
+	content.AutomaticCanvasSize = Enum.AutomaticSize.XY
+	content.CanvasSize = UDim2.fromOffset(0, 0)
 	Instance.new("UIListLayout").Parent = content
 	local padding = Instance.new("UIPadding")
 	padding.Parent = content
 	padding.PaddingTop = UDim.new(0, 15)
 	padding.PaddingLeft = UDim.new(0, 5)
+	padding.PaddingRight = UDim.new(0, 5)
 end
 
 function lib.create:tab(name, onclick)
@@ -206,8 +257,6 @@ function lib.create:tab(name, onclick)
 		state[name] = {}
 	end
 	
-	tabs.CanvasSize = UDim2.fromOffset(0, 25 * (#tabs:GetChildren() - 1))
-	
 	tab.MouseEnter:Connect(function () -- При наведении на кнопку 
 		local Tween = tweenService:Create(tab, TweenInfo.new(0.3), {BackgroundTransparency=0}):Play()
 	end)
@@ -223,7 +272,6 @@ function lib.create:tab(name, onclick)
 		CurrentTab = name
 		stateCount = 0
 		onclick()
-		content.CanvasSize = UDim2.fromOffset(0, 28.5 * (#content:GetChildren() - 2))
 	end)
 	if #tabs:GetChildren() == 2 then
 		for _, elem in ipairs(content:GetChildren()) do
@@ -234,7 +282,6 @@ function lib.create:tab(name, onclick)
 		stateCount = 0
 		CurrentTab = name
 		onclick()
-		content.CanvasSize = UDim2.fromOffset(0, 28 * (#content:GetChildren() - 2))
 	end
 	return {
 		change = {
@@ -249,82 +296,87 @@ function lib.create:tab(name, onclick)
 end
 
 function lib.create:toggle(parent, enabled, callback)
-	if enabled == nil then enabled = false end
-	local content = lib.root.Main.Content
-	local toggleBack = Instance.new("ImageButton", content)
-	local name = stateCount .. "Toggle"
-	stateCount += 1
-	if state[CurrentTab][name] == nil then
-		state[CurrentTab][name] = enabled
-	else
-		enabled = state[CurrentTab][name]
-	end
-	if enabled then
-		toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
-	else
-		toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
-	end
-	local cornerb = Instance.new('UICorner')
-	cornerb.CornerRadius = UDim.new(1, 0)
-	cornerb.Parent = toggleBack
-	toggleBack.Size = UDim2.new(0, 45, 0, 21)
-	toggleBack.BorderSizePixel = 0
-	toggleBack.ZIndex = 3
+    if enabled == nil then enabled = false end
+    local content = lib.root.Main.Content
+    local toggleBack = Instance.new("ImageButton", content)
+    local name = stateCount .. "Toggle"
+    stateCount += 1
+    if state[CurrentTab][name] == nil then
+        state[CurrentTab][name] = enabled
+    else
+        enabled = state[CurrentTab][name]
+    end
+    if enabled then
+        toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
+    else
+        toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
+    end
 
-	local circle = Instance.new("Frame")
-	circle.Parent = toggleBack
-	circle.BackgroundColor3 = lib.styles.toggle.circle
-	circle.Size = UDim2.new(0, 13, 0, 13)
-	circle.ZIndex = 4
-	if enabled then
-		circle.Position = UDim2.fromOffset(28, 4)
-	else
-		circle.Position = UDim2.fromOffset(4, 4)
-	end
-	local cornerc = Instance.new('UICorner')
-	cornerc.CornerRadius = UDim.new(1, 0)
-	cornerc.Parent = circle
-	toggleBack:SetAttribute("enabled", enabled)	
-	toggleBack.Parent = parent or content
-	toggleBack.MouseButton1Click:Connect(function ()
-		enabled = not enabled
-		toggleBack:SetAttribute("enabled", enabled)
-		state[CurrentTab][name] = enabled
-		if enabled then
-			toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
-		else
-			toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
-		end
-		circle:TweenPosition(
-			enabled and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
-			Enum.EasingDirection.Out,
-			Enum.EasingStyle.Quad,
-			0.2,
-			true
-		)
-		callback(enabled)
-	end)
-	return {
-		change = {
-			enabled = function (v)
-				if v == nil then v = not enabled end
-				enabled = v
-				toggleBack:SetAttribute("enabled", v)
-				state[CurrentTab][name] = v
+    local cornerb = Instance.new('UICorner')
+    cornerb.CornerRadius = UDim.new(1, 0)
+    cornerb.Parent = toggleBack
+    toggleBack.Size = UDim2.new(0, 45, 0, 21)
+    toggleBack.BorderSizePixel = 0
+    toggleBack.ZIndex = 3
 
-				toggleBack.BackgroundColor3 = v and lib.styles.toggle.enabled
-											or       lib.styles.toggle.disabled
 
-				circle:TweenPosition(
-					v and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
-					Enum.EasingDirection.Out,
-					Enum.EasingStyle.Quad,
-					0.2,
-					true
-				)
-			end
-		}
-	}
+    local circle = Instance.new("Frame")
+    circle.Parent = toggleBack
+    circle.BackgroundColor3 = lib.styles.toggle.circle
+    circle.Size = UDim2.new(0, 13, 0, 13)
+    circle.ZIndex = 4
+    if enabled then
+        circle.Position = UDim2.fromOffset(28, 4)
+    else
+        circle.Position = UDim2.fromOffset(4, 4)
+    end
+    local cornerc = Instance.new('UICorner')
+    cornerc.CornerRadius = UDim.new(1, 0)
+    cornerc.Parent = circle
+    toggleBack:SetAttribute("enabled", enabled)
+    toggleBack.Parent = parent or content
+    toggleBack.MouseButton1Click:Connect(function ()
+        enabled = not enabled
+        toggleBack:SetAttribute("enabled", enabled)
+        state[CurrentTab][name] = enabled
+        if enabled then
+            toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
+        else
+            toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
+        end
+        circle:TweenPosition(
+            enabled and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Quad,
+            0.2,
+            true
+        )
+        callback(enabled)
+    end)
+
+    return {
+        change = {
+            enabled = function (v)
+                if v == nil then v = not enabled end
+                enabled = v
+                toggleBack:SetAttribute("enabled", v)
+                state[CurrentTab][name] = v
+                if v then
+                    toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
+                else
+                    toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
+                end
+
+                circle:TweenPosition(
+                    v and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
+                    Enum.EasingDirection.Out,
+                    Enum.EasingStyle.Quad,
+                    0.2,
+                    true
+                )
+            end
+        }
+    }
 end
 
 function lib.create:range(parent, min, max, value, callback)
@@ -428,7 +480,8 @@ function lib.create:label(parent, text, size:number, font, XAlignment)
 	label.BackgroundColor3 = lib.styles.background or Color3.new(0, 0, 0)
 	label.TextSize = size or 18
 	label.TextColor3 = lib.styles.global.text
-	label.Size = UDim2.fromOffset(200, 50)
+	label.Size = UDim2.fromOffset(0, 27)
+	label.AutomaticSize = Enum.AutomaticSize.X
 	label.Parent = parent or content
 	--label.Position = relPos
 	return label
@@ -441,8 +494,10 @@ function lib.create:block()
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 	layout.VerticalAlignment = Enum.VerticalAlignment.Center
 	layout.Padding = UDim.new(0, 6)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.Parent = block
-	block.Size = UDim2.new(0, 0, 0, 27)
+	block.Size = UDim2.fromOffset(0, 27)
+	block.AutomaticSize = Enum.AutomaticSize.X
 	block.BackgroundTransparency = 1
 	block.Parent = lib.root.Main.Content
 	return block
@@ -470,6 +525,7 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 	padding.PaddingLeft = UDim.new(0, 3)
 	padding.Parent = block
 	block.Parent = parent
+	local currIn, currTi = selected, items[selected]
 	block.MouseButton1Click:Connect(function()
 		local select = Instance.new("ScrollingFrame")
 		select.ScrollBarThickness = 5
@@ -503,6 +559,9 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 		end
 		select.Parent = lib.root
 	end)
+	return {
+		currentOption = function () return currIn, currTi end
+	}
 end
 
 function lib.create:image(parent, url)
@@ -529,6 +588,55 @@ function lib:Destroy()
 	state = {}
 	stateCount = {}
 	CurrentTab = ""
+end
+
+local bindAssignment = {
+    status = false,
+    callback = nil
+}
+
+local function getComboString(input)
+    local keys = {}
+    for _, obj in pairs(UIS:GetKeysPressed()) do
+        table.insert(keys, obj.KeyCode.Name:lower())
+    end
+
+    local current = input.KeyCode.Name:lower()
+    local exists = false
+    for _, v in pairs(keys) do if v == current then exists = true end end
+    if not exists then table.insert(keys, current) end
+    
+    return table.concat(keys, "+")
+end
+
+UIS.InputBegan:Connect(function(input, gp)
+    -- if gp or input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+
+    -- if bindAssignment.status then
+    --     local newBind = getComboString(input)
+        
+    --     for _, data in ipairs(config.binds) do
+    --         if data.callback == bindAssignment.callback then
+    --             data.bind = newBind
+                
+    --             bindAssignment.status = false
+    --             bindAssignment.callback = nil
+    --             break
+    --         end
+    --     end
+    --     return
+    -- end
+
+    -- for _, data in ipairs(config.binds) do
+    --     if data.bind and getComboString(input) == data.bind then
+    --         data.callback()
+    --     end
+    -- end
+end)
+
+function lib.binds:SetBind(callback)
+	bindAssignment.status = true
+	bindAssignment.callback = callback
 end
 
 return lib
