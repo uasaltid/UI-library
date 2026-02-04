@@ -107,8 +107,8 @@ function lib:init(name)
 		Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
 		Players.LocalPlayer.CharacterAdded:Wait()
 	end
-	local gamePos = configGame and configGame.position
-	local globalPos = configGlobal and configGlobal.position
+	local gamePos = configGame.position
+	local globalPos = configGlobal.position
 	local size = UDim2.fromOffset(unpack(configGame.size or configGlobal.size or { 500, 300 }))
 	local positionWindow = UDim2.fromOffset(unpack(configGame.position or configGlobal.position or { 500, 300 }))
 	lib.root = Instance.new("ScreenGui") -- Создание окна
@@ -118,13 +118,13 @@ function lib:init(name)
 	lib.root.IgnoreGuiInset = true
 	local main = Instance.new("Frame")
 	main.Name = "Main"
-	main.Position = getfenv().lastWindowPos or (gamePos and Vector2.new(gamePos[1], gamePos[2])) or (globalPos and Vector2.new(globalPos[1], globalPos[2])) or size
+	main.Position = getfenv().lastWindowPos or (gamePos and Vector2.fromOffset(gamePos[1], gamePos[2])) or (globalPos and Vector2.fromOffset(globalPos[1], globalPos[2])) or size
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
-	print(getfenv().lastWindowPos or (gamePos and Vector2.new(gamePos[1], gamePos[2])) or (globalPos and Vector2.new(globalPos[1], globalPos[2])))
+	print(getfenv().lastWindowPos or (gamePos and Vector2.fromOffset(gamePos[1], gamePos[2])) or (globalPos and Vector2.fromOffset(globalPos[1], globalPos[2])))
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
 	titleBar.Name = 'TitleBar'
 	titleBar.Size = UDim2.new(0, size.X.Offset, 0, 25)
