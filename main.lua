@@ -3,7 +3,6 @@ local http = game:GetService('HttpService')
 local tweenService = game:GetService('TweenService')
 local UIS = game:GetService("UserInputService")
 
---local login = http:JSONDecode(game:HttpGet("https://dev.uasalt.org/scripts/saline/v0.0.1/login?nickname=" .. game.Players.LocalPlayer.Name .. "&placeId=" .. game.PlaceId .. "&userid=" .. game.Players.LocalPlayer.UserId))
 local lib = {}
 lib.root = ""
 
