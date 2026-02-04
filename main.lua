@@ -116,7 +116,7 @@ function lib:init(name)
 	lib.root.IgnoreGuiInset = true
 	local main = Instance.new("Frame")
 	main.Name = "Main"
-	main.Position = getfenv().lastWindowPos or size
+	main.Position = getfenv().lastWindowPos or Vector2.new(configGame.position[1], configGame.position[2]) or Vector2.new(configGlobal.position[1], configGlobal.position[2]) or size
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
@@ -155,8 +155,8 @@ function lib:init(name)
 	titleBar.MouseButton1Up:Connect(function ()
 		GUIMOVING = false
 		main.BackgroundTransparency = 0
-		lib.config.game.cfg.position = { main.Position.X.Offset, main.Position.Y.Offset }
-		lib.config.game.update()
+		lib.config.global.cfg.position = { main.Position.X.Offset, main.Position.Y.Offset }
+		lib.config.global.update()
 	end)
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if GUIMOVING then
@@ -410,6 +410,7 @@ function lib.create:range(parent, min, max, value, callback)
 	UIS.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			MOVING = false
+			
 		end
 	end)
 	game:GetService("RunService").RenderStepped:Connect(function()
