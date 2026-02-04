@@ -116,7 +116,7 @@ function lib:init(name)
 	lib.root.IgnoreGuiInset = true
 	local main = Instance.new("Frame")
 	main.Name = "Main"
-	main.Position = getfenv().lastWindowPos or Vector2.new(configGame.position[1], configGame.position[2]) or Vector2.new(configGlobal.position[1], configGlobal.position[2]) or size
+	main.Position = getfenv().lastWindowPos or (configGame.position and Vector2.new(configGame.position[1], configGame.position[2]) or nil) or (configGlobal.position and Vector2.new(configGlobal.position[1], configGlobal.position[2]) or nil) or size
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
