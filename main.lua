@@ -124,6 +124,7 @@ function lib:init(name)
 	main.Size = size
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
+	print(getfenv().lastWindowPos or (gamePos and Vector2.new(gamePos[1], gamePos[2])) or (globalPos and Vector2.new(globalPos[1], globalPos[2])) or size)
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
 	titleBar.Name = 'TitleBar'
 	titleBar.Size = UDim2.new(0, size.X.Offset, 0, 25)
