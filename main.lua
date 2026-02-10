@@ -107,8 +107,6 @@ function lib:init(name)
 		Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
 		Players.LocalPlayer.CharacterAdded:Wait()
 	end
-	local gamePos = configGame.position
-	local globalPos = configGlobal.position
 	local size = UDim2.fromOffset(unpack(configGame.size or configGlobal.size or { 500, 300 }))
 	local positionWindow = UDim2.fromOffset(unpack(configGame.position or configGlobal.position or { 500, 300 }))
 	lib.root = Instance.new("ScreenGui") -- Создание окна
