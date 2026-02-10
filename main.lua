@@ -118,13 +118,12 @@ function lib:init(name)
 	lib.root.IgnoreGuiInset = true
 	local main = Instance.new("Frame")
 	main.Name = "Main"
-	main.Position = getfenv().lastWindowPos or (gamePos and Vector2.fromOffset(gamePos[1], gamePos[2])) or (globalPos and Vector2.fromOffset(globalPos[1], globalPos[2])) or size
+	main.Position = size
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
-	print(getfenv().lastWindowPos or (gamePos and Vector2.fromOffset(gamePos[1], gamePos[2])) or (globalPos and Vector2.fromOffset(globalPos[1], globalPos[2])))
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
 	titleBar.Name = 'TitleBar'
 	titleBar.Size = UDim2.new(0, size.X.Offset, 0, 25)
