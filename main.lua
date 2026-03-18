@@ -114,13 +114,13 @@ function lib:init(name)
 	lib.root.ResetOnSpawn = false
 	lib.root.Parent = game.Players.LocalPlayer.PlayerGui
 	lib.root.IgnoreGuiInset = true
+	lib.root.DisplayOrder = 2147483647
 	local main = Instance.new("Frame")
 	main.Name = "Main"
 	main.Position = size
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
-	main.DisplayOrder = 2147483647
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
