@@ -120,6 +120,7 @@ function lib:init(name)
 	main.BackgroundTransparency = 0
 	main.BackgroundColor3 = lib.styles.root.background
 	main.Size = size
+	main.DisplayOrder = 2147483647
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
@@ -639,4 +640,15 @@ function lib.binds:SetBind(callback)
 	bindAssignment.callback = callback
 end
 
+
+lib.sendNotification = function (title, text, duration, btn1, btn2, callback)
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+	    Title = title;
+	    Text = text;
+	    Duration = duration;
+	    Button1 = btn1;
+	    Button2 = btn2;
+	    Callback = callback
+	})
+end
 return lib
