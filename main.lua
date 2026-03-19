@@ -642,6 +642,7 @@ end
 
 
 lib.sendNotification = function (title, text, duration, btn1, btn2, callback)
+	if not duration then duration = 8 end
 	game:GetService("StarterGui"):SetCore("SendNotification", {
 	    Title = title;
 	    Text = text;
