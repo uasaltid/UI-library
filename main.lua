@@ -375,7 +375,8 @@ function lib.create:toggle(parent, enabled, callback)
                     true
                 )
             end
-        }
+        };
+		block = parent
     }
 end
 
@@ -429,6 +430,7 @@ function lib.create:range(parent, min, max, value, callback)
 	end)
 
 	line.Parent = parent or content
+	return parent
 end
 
 function lib.create:input(parent, placeholder, default, callback )
@@ -467,7 +469,8 @@ function lib.create:input(parent, placeholder, default, callback )
 			placeholder = function (text)
 				input.PlaceholderText = text
 			end
-		}
+		};
+		block = parent
 	}
 end
 
@@ -484,8 +487,7 @@ function lib.create:label(parent, text, size:number, font, XAlignment)
 	label.Size = UDim2.fromOffset(0, 27)
 	label.AutomaticSize = Enum.AutomaticSize.X
 	label.Parent = parent or content
-	--label.Position = relPos
-	return label
+	return parent
 end
 
 function lib.create:block()
@@ -501,6 +503,14 @@ function lib.create:block()
 	block.AutomaticSize = Enum.AutomaticSize.X
 	block.BackgroundTransparency = 1
 	block.Parent = lib.root.Main.Content
+	function block:addLabel(...) lib.create:label(block, ...) end
+	function block:addToggle(...) lib.create:toggle(block, ...) end
+	function block:addRange(...) lib.create:range(block, ...) end
+	function block:addToggle(...) lib.create:toggle(block, ...) end
+	function block:addInput(...) lib.create:input(block, ...) end
+	function block:addDropbox(...) lib.create:dropbox(block, ...) end
+	function block:addImage(...) lib.create:image(block, ...) end
+	function block:addButton(...) lib.create:button(block, ...) end
 	return block
 end
 
@@ -561,7 +571,8 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 		select.Parent = lib.root
 	end)
 	return {
-		currentOption = function () return currIn, currTi end
+		currentOption = function () return currIn, currTi end;
+		block = parent
 	}
 end
 
@@ -571,6 +582,7 @@ function lib.create:image(parent, url)
 	image.Size = UDim2.fromOffset(21, 21)
 	image.BackgroundTransparency = 1
 	image.Parent = parent
+	return parent
 end
 
 function lib.create:button(parent, text, onclick)
@@ -581,6 +593,7 @@ function lib.create:button(parent, text, onclick)
 	button.BackgroundColor3 = lib.styles.button.background
 	button.Parent = parent
 	button.MouseButton1Click:Connect(onclick)
+	return parent
 end
 
 function lib:Destroy()
