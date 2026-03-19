@@ -503,15 +503,16 @@ function lib.create:block()
 	block.AutomaticSize = Enum.AutomaticSize.X
 	block.BackgroundTransparency = 1
 	block.Parent = lib.root.Main.Content
-	function block:addLabel(...) lib.create:label(block, ...) end
-	function block:addToggle(...) lib.create:toggle(block, ...) end
-	function block:addRange(...) lib.create:range(block, ...) end
-	function block:addToggle(...) lib.create:toggle(block, ...) end
-	function block:addInput(...) lib.create:input(block, ...) end
-	function block:addDropbox(...) lib.create:dropbox(block, ...) end
-	function block:addImage(...) lib.create:image(block, ...) end
-	function block:addButton(...) lib.create:button(block, ...) end
-	return block
+	local data = { Parent = block }
+	function data:addLabel(...) lib.create:label(block, ...) end
+	function data:addToggle(...) lib.create:toggle(block, ...) end
+	function data:addRange(...) lib.create:range(block, ...) end
+	function data:addToggle(...) lib.create:toggle(block, ...) end
+	function data:addInput(...) lib.create:input(block, ...) end
+	function data:addDropbox(...) lib.create:dropbox(block, ...) end
+	function data:addImage(...) lib.create:image(block, ...) end
+	function data:addButton(...) lib.create:button(block, ...) end
+	return data
 end
 
 function lib.create:dropbox(parent, items, selected:number, onchange)
