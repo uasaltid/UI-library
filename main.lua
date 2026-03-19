@@ -112,7 +112,7 @@ function lib:init(name)
 	lib.root = Instance.new("ScreenGui") -- Создание окна
 	lib.root.Name = name
 	lib.root.ResetOnSpawn = false
-	lib.root.Parent = game.Players.LocalPlayer.PlayerGui
+	lib.root.Parent = game.CoreGui
 	lib.root.IgnoreGuiInset = true
 	lib.root.DisplayOrder = 2147483647
 	local main = Instance.new("Frame")
