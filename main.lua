@@ -532,7 +532,7 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 		select.ScrollBarThickness = 5
 		select.CanvasSize = UDim2.fromOffset(0, 21*#items)
 		select.Size = UDim2.fromOffset(100, 126)
-		select.Position = UDim2.fromOffset(block.AbsolutePosition.X, block.AbsolutePosition.Y + block.Size.Y.Offset)
+		select.Position = UDim2.fromOffset(block.AbsolutePosition.X, block.AbsolutePosition.Y + 21)
 		select.Name = "DropboxSelector"
 		select.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 		select.ZIndex = 4
