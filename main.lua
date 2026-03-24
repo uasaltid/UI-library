@@ -235,6 +235,10 @@ function lib:init(name)
 	padding.PaddingRight = UDim.new(0, 5)
 end
 
+function lib.loadContext(instance)
+	lib.root = instance
+end
+
 function lib.create:tab(name, onclick)
 	local tabs = lib.root.Main.Tabs -- Получение фрейма с вкладками
 	local content = lib.root.Main.Content
