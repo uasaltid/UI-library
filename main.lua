@@ -490,7 +490,7 @@ function lib.create:label(parent, text, size:number, font, XAlignment)
 	label.TextColor3 = lib.styles.global.text
 	label.Size = UDim2.fromOffset(0, 27)
 	label.AutomaticSize = Enum.AutomaticSize.X
-	label.Parent = parent or content
+	label.Parent = parent.Parent or content
 	return parent
 end
 
