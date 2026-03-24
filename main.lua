@@ -338,7 +338,7 @@ function lib.create:toggle(parent, enabled, callback)
     cornerc.CornerRadius = UDim.new(1, 0)
     cornerc.Parent = circle
     toggleBack:SetAttribute("enabled", enabled)
-    toggleBack.Parent = parent or content
+    toggleBack.Parent = parent.Parent or content
     toggleBack.MouseButton1Click:Connect(function ()
         enabled = not enabled
         toggleBack:SetAttribute("enabled", enabled)
@@ -433,7 +433,7 @@ function lib.create:range(parent, min, max, value, callback)
 		end
 	end)
 
-	line.Parent = parent or content
+	line.Parent = parent.Parent or content
 	return parent
 end
 
@@ -454,7 +454,7 @@ function lib.create:input(parent, placeholder, default, callback )
 	input.TextXAlignment = Enum.TextXAlignment.Left
 	input.BackgroundColor3 = lib.styles.input.background
 	input.TextColor3 = lib.styles.global.text
-	input.Parent = parent or content
+	input.Parent = parent.Parent or content
 	input.FocusLost:Connect(function()
 		state[CurrentTab][name] = input.Text
 		if callback then
@@ -490,7 +490,7 @@ function lib.create:label(parent, text, size:number, font, XAlignment)
 	label.TextColor3 = lib.styles.global.text
 	label.Size = UDim2.fromOffset(0, 27)
 	label.AutomaticSize = Enum.AutomaticSize.X
-	label.Parent = parent.Parent or content
+	label.Parent = parent.Parent
 	return parent
 end
 
@@ -540,7 +540,7 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 	local padding = Instance.new("UIPadding")
 	padding.PaddingLeft = UDim.new(0, 3)
 	padding.Parent = block
-	block.Parent = parent
+	block.Parent = parent.Parent
 	local currIn, currTi = selected, items[selected]
 	block.MouseButton1Click:Connect(function()
 		local select = Instance.new("ScrollingFrame")
@@ -586,7 +586,7 @@ function lib.create:image(parent, url)
 	image.Image = url
 	image.Size = UDim2.fromOffset(21, 21)
 	image.BackgroundTransparency = 1
-	image.Parent = parent
+	image.Parent = parent.Parent
 	return parent
 end
 
@@ -596,7 +596,7 @@ function lib.create:button(parent, text, onclick)
 	button.Size = UDim2.fromOffset(80, 27)
 	button.TextColor3 = lib.styles.button.textColor
 	button.BackgroundColor3 = lib.styles.button.background
-	button.Parent = parent
+	button.Parent = parent.Parent
 	button.MouseButton1Click:Connect(onclick)
 	return parent
 end
