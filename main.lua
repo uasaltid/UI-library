@@ -235,8 +235,8 @@ function lib:init(name)
 	padding.PaddingRight = UDim.new(0, 5)
 end
 
-function lib.loadContext(instance)
-	lib.root = instance
+function lib.loadContext(name)
+	lib.root = game.CoreGui:WaitForChild(name)
 end
 
 function lib.create:tab(name, onclick)
