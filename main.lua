@@ -236,7 +236,7 @@ function lib:init(name)
 end
 
 function lib.loadContext(name)
-	lib.root = game.CoreGui:WaitForChild(name)
+	lib.root = game.CoreGui:FindFirstChild(name)
 end
 
 function lib.create:tab(name, onclick)
