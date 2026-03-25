@@ -129,25 +129,25 @@ function lib:init(name, params)
 	main.Size = size
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
-	local mouse = game.Players.LocalPlayer:GetMouse() -- resize
-	local resizing = false
-	mouse.Button1Down:Connect(function() resizing = true end)
-	mouse.Button1Up:Connect(function() resizing = false end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-	    local x = main.Position.X.Offset
-	    local y = main.Position.Y.Offset
-	    local w = main.Size.X.Offset
-	    local h = main.Size.Y.Offset
+	-- local mouse = game.Players.LocalPlayer:GetMouse() -- resize
+	-- local resizing = false
+	-- mouse.Button1Down:Connect(function() resizing = true end)
+	-- mouse.Button1Up:Connect(function() resizing = false end)
+	-- game:GetService("RunService").RenderStepped:Connect(function()
+	--     local x = main.Position.X.Offset
+	--     local y = main.Position.Y.Offset
+	--     local w = main.Size.X.Offset
+	--     local h = main.Size.Y.Offset
 	
-	    if mouse.X >= x + w - 5 and mouse.X <= x + w and mouse.Y >= y + h - 5 and mouse.Y <= y + h then
-	        mouse.Icon = lib.styles.icon.leftRight
-	        if resizing then
-	            main.Size = UDim2.new(0, mouse.X - x, 0, h)
-	        end
-	    else
-	        mouse.Icon = ""
-	    end
-	end)
+	--     if mouse.X >= x + w - 5 and mouse.X <= x + w and mouse.Y >= y + h - 5 and mouse.Y <= y + h then
+	--         mouse.Icon = lib.styles.icon.leftRight
+	--         if resizing then
+	--             main.Size = UDim2.new(0, mouse.X - x, 0, h)
+	--         end
+	--     else
+	--         mouse.Icon = ""
+	--     end
+	-- end)
 	
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
 	titleBar.Name = 'TitleBar'
