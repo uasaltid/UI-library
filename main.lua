@@ -55,6 +55,12 @@ lib.styles = {
 	button = {
 		textColor = Color3.fromRGB(210, 210, 210),
 		background = Color3.fromRGB(15, 15, 15)
+	},
+	icons = {
+		leftRight = 86470608509000,
+		topDown = 122130730640905,
+		leftDiagonal = 133394642185819,
+		rightDiagonal = 100590209131020
 	}
 }
 
@@ -101,7 +107,7 @@ lib.config.global.cfg = configGlobal
 lib.config.game.update = function () updatecfg(true) end
 lib.config.game.cfg = configGame
 
-function lib:init(name)
+function lib:init(name, params)
 	if not name then name = "Untitled" end
 	if Players.LocalPlayer == nil then
 		Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
@@ -123,6 +129,26 @@ function lib:init(name)
 	main.Size = size
 	Instance.new('UICorner').Parent = main
 	main.Parent = lib.root
+	local mouse = game.Players.LocalPlayer:GetMouse() -- resize
+	local resizing = false
+	mouse.Button1Down:Connect(function() resizing = true end)
+	mouse.Button1Up:Connect(function() resizing = false end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+	    local x = main.Position.X.Offset
+	    local y = main.Position.Y.Offset
+	    local w = main.Size.X.Offset
+	    local h = main.Size.Y.Offset
+	
+	    if mouse.X >= x + w - 5 and mouse.X <= x + w and mouse.Y >= y + h - 5 and mouse.Y <= y + h then
+	        mouse.Icon = lib.styles.icon.leftRight
+	        if resizing then
+	            main.Size = UDim2.new(0, mouse.X - x, 0, h)
+	        end
+	    else
+	        mouse.Icon = ""
+	    end
+	end)
+	
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
 	titleBar.Name = 'TitleBar'
 	titleBar.Size = UDim2.new(0, size.X.Offset, 0, 25)
@@ -203,13 +229,13 @@ function lib:init(name)
 	tabs.ScrollBarThickness = 5
 	tabs.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	tabs.CanvasSize = UDim2.fromOffset(0, 0)
-	local separator = Instance.new("Frame") -- Создаю разделитель что бы не было слитно
+	local separator = Instance.new("Frame") 
 	separator.Parent = main
 	separator.BackgroundColor3 = lib.styles.root.border
 	separator.BorderSizePixel = 0
 	separator.Name = "Separator"
-	separator.Position = UDim2.new(0, tabs.Size.X.Offset, 0, titleBar.Size.Y.Offset) -- Настраиваю позици на границе с вкладками и с контентом
-	separator.Size = UDim2.new(0, 1, 0, size.Y.Offset - titleBar.Size.Y.Offset) -- Настраиваю размеры что бы он был тонким и на весь меин по высоте
+	separator.Position = UDim2.new(0, tabs.Size.X.Offset, 0, titleBar.Size.Y.Offset)
+	separator.Size = UDim2.new(0, 1, 0, size.Y.Offset - titleBar.Size.Y.Offset)
 	separator.Name = "Separator"
 	separator.BorderSizePixel = 0
 	local yurta = Instance.new("UIListLayout")
@@ -217,10 +243,10 @@ function lib:init(name)
 	yurta.Parent = tabs
 
 	-- Контент                                             
-	local content = Instance.new("ScrollingFrame") -- Создаю фрейм что бы можно было листать и дохуя параметров добавлять
+	local content = Instance.new("ScrollingFrame")
 	content.Parent = main
 	content.Name = "Content"
-	content.Size = UDim2.new(0, size.X.Offset - (size.X.Offset / 3), 0, size.Y.Offset - titleBar.Size.Y.Offset) -- Ставим размер на оставшееся место в окне
+	content.Size = UDim2.new(0, size.X.Offset - (size.X.Offset / 3), 0, size.Y.Offset - titleBar.Size.Y.Offset
 	content.Position = UDim2.new(0, size.X.Offset / 3, 0, titleBar.Size.Y.Offset)
 	content.BackgroundTransparency = 1
 	content.BorderSizePixel = 0
