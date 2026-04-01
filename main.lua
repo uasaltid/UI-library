@@ -535,14 +535,14 @@ function lib.create:block()
 	block.BackgroundTransparency = 1
 	block.Parent = lib.root.Main.Content
 	local data = { Parent = block }
-	function data:addLabel(...) lib.create:label(block, ...) end
-	function data:addToggle(...) lib.create:toggle(block, ...) end
-	function data:addRange(...) lib.create:range(block, ...) end
-	function data:addToggle(...) lib.create:toggle(block, ...) end
-	function data:addInput(...) lib.create:input(block, ...) end
-	function data:addDropbox(...) lib.create:dropbox(block, ...) end
-	function data:addImage(...) lib.create:image(block, ...) end
-	function data:addButton(...) lib.create:button(block, ...) end
+	function data:addLabel(...) return lib.create:label(block, ...) end
+	function data:addToggle(...) return lib.create:toggle(block, ...) end
+	function data:addRange(...) return lib.create:range(block, ...) end
+	function data:addToggle(...) return lib.create:toggle(block, ...) end
+	function data:addInput(...) return lib.create:input(block, ...) end
+	function data:addDropbox(...) return lib.create:dropbox(block, ...) end
+	function data:addImage(...) return lib.create:image(block, ...) end
+	function data:addButton(...) return lib.create:button(block, ...) end
 	return data
 end
 
