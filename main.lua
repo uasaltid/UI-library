@@ -433,18 +433,19 @@ function lib.create:range(parent, min, max, value, callback)
 	corner.CornerRadius = UDim.new(1, 0)
 	corner.Parent = circle
 	local percent = (value - min) / (max - min)
+	if percent > max then percent = max end
 	local relX = percent * line.AbsoluteSize.X
 	circle.Position = UDim2.fromOffset(relX - 6.5, -6.5)
 
 	local MOVING = false
-	circle.MouseButton1Down:Connect(function () MOVING = true end)
-	circle.MouseButton1Up:Connect(function () MOVING = false end)
-	UIS.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			MOVING = false
-			
-		end
-	end)
+	if UIS.TouchEnabled and not UIS.KeyboardEnabled then
+		circle.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch then MOVING = true end end)
+		circle.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch then MOVING = false end end)
+	else
+		circle.MouseButton1Down:Connect(function () MOVING = true end)
+		circle.MouseButton1Up:Connect(function () MOVING = false end)
+	end
+	
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if MOVING then
 			local mouse = game.Players.LocalPlayer:GetMouse()
