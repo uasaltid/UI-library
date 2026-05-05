@@ -182,8 +182,8 @@ function lib:init(name, params)
 	titleBar.MouseButton1Up:Connect(function ()
 		GUIMOVING = false
 		main.BackgroundTransparency = 0
-		lib.config.global.cfg.position = { main.Position.X.Offset, main.Position.Y.Offset }
-		lib.config.global.update()
+		--lib.config.global.cfg.position = { main.Position.X.Offset, main.Position.Y.Offset }
+		--lib.config.global.update()
 	end)
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if GUIMOVING then
@@ -437,27 +437,42 @@ function lib.create:range(parent, min, max, value, callback)
 	local relX = percent * line.AbsoluteSize.X
 	circle.Position = UDim2.fromOffset(relX - 6.5, -6.5)
 
+
 	local MOVING = false
-	if UIS.TouchEnabled and not UIS.KeyboardEnabled then
-		circle.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch then MOVING = true end end)
-		circle.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch then MOVING = false end end)
-	else
-		circle.MouseButton1Down:Connect(function () MOVING = true end)
-		circle.MouseButton1Up:Connect(function () MOVING = false end)
-	end
+	
+	circle.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch
+		or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			MOVING = true
+		end
+	end)
+	
+	UIS.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch
+		or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			MOVING = false
+		end
+	end)
 	
 	game:GetService("RunService").RenderStepped:Connect(function()
-		if MOVING then
-			local mouse = game.Players.LocalPlayer:GetMouse()
-			local absPos = line.AbsolutePosition
-			local absSize = line.AbsoluteSize
-			local x = math.clamp(mouse.X - absPos.X, 0, absSize.X)
-			circle.Position = UDim2.fromOffset(x - 6.5, -6.5)
-			local percent = math.clamp(x / line.AbsoluteSize.X, 0, 1)
-			local value = min + (max - min) * percent
-			state[CurrentTab][name] = value
-			callback(value)
-		end
+		if not MOVING then return end
+	
+		local pos = UIS:GetMouseLocation()
+		local absPos = line.AbsolutePosition
+		local absSize = line.AbsoluteSize
+	
+		if absSize.X == 0 then return end
+	
+		local x = math.clamp(pos.X - absPos.X, 0, absSize.X)
+	
+		local radius = circle.AbsoluteSize.X / 2
+		circle.Position = UDim2.fromOffset(x - radius, -radius)
+	
+		local percent = x / absSize.X
+		local value = min + (max - min) * percent
+	
+		state[CurrentTab][name] = value
+		callback(value)
 	end)
 
 	line.Parent = parent.Parent or content
