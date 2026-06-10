@@ -151,7 +151,7 @@ function lib:init(name, params)
 	
 	local titleBar = Instance.new('ImageButton') -- Создание верхнего блока
 	titleBar.Name = 'TitleBar'
-	titleBar.Size = UDim2.new(0, size.X.Offset, 0, 25)
+	titleBar.Size = UDim2.fromOffset(size.X.Offset, 25)
 	titleBar.BackgroundTransparency = 1
 	Instance.new('UICorner').Parent = titleBar
 	titleBar.Parent = main
@@ -196,8 +196,10 @@ function lib:init(name, params)
 	close.Image = "http://www.roblox.com/asset/?id=132261474823036"
 	close.Name = "Close"
 	close.BorderSizePixel = 0
-	close.Size = UDim2.new(0, titleBar.Size.Y.Offset, 0, titleBar.Size.Y.Offset)
-	close.Position = UDim2.new(0, titleBar.Size.X.Offset - titleBar.Size.Y.Offset, 0)
+	print(titleBar.Size.X.Offset)
+	print(titleBar.Size.Y.Offset)
+	close.Size = UDim2.fromOffset(titleBar.Size.Y.Offset, titleBar.Size.Y.Offset)
+	close.Position = UDim2.fromOffset(titleBar.Size.X.Offset - titleBar.Size.Y.Offset, 0)
 	close.MouseButton1Click:Connect(function () lib:Destroy() end) 
 	close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 	close.BackgroundTransparency = 1
@@ -219,6 +221,8 @@ function lib:init(name, params)
 	minimaze.MouseLeave:Connect(function () minimaze.BackgroundTransparency = 1 end)
 
 	-- Вкладки
+	print(size.X.Offset)
+	print(size.Y.Offset)
 	local tabs = Instance.new("ScrollingFrame") 
 	tabs.Parent = main
 	tabs.Position = UDim2.new(0, 0, 0, titleBar.Size.Y.Offset)
@@ -246,6 +250,10 @@ function lib:init(name, params)
 	local content = Instance.new("ScrollingFrame")
 	content.Parent = main
 	content.Name = "Content"
+	print(size.X.Offset)
+	print(size.X.Offset / 3)
+	print(size.Y.Offset)
+	print(titleBar.Size.Y.Offset)
 	content.Size = UDim2.new(0, size.X.Offset - (size.X.Offset / 3), 0, size.Y.Offset - titleBar.Size.Y.Offset)
 	content.Position = UDim2.new(0, size.X.Offset / 3, 0, titleBar.Size.Y.Offset)
 	content.BackgroundTransparency = 1
