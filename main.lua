@@ -374,24 +374,22 @@ function lib.create:toggle(parent, enabled, callback)
     toggleBack:SetAttribute("enabled", enabled)
     toggleBack.Parent = parent.Parent or content
     toggleBack.MouseButton1Click:Connect(function ()
-        local feedback = callback(not enabled)
-		if feedback == true or feedback == nil then
-	        enabled = not enabled
-	        toggleBack:SetAttribute("enabled", enabled)
-	        state[CurrentTab][name] = enabled
-	        if enabled then
-	            toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
-	        else
-	            toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
-	        end
-			circle:TweenPosition(
-				enabled and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
-				Enum.EasingDirection.Out,
-				Enum.EasingStyle.Quad,
-				0.2,
-				true
-			)
-		end
+        enabled = not enabled
+        toggleBack:SetAttribute("enabled", enabled)
+        state[CurrentTab][name] = enabled
+        if enabled then
+            toggleBack.BackgroundColor3 = lib.styles.toggle.enabled
+        else
+            toggleBack.BackgroundColor3 = lib.styles.toggle.disabled
+        end
+        circle:TweenPosition(
+            enabled and UDim2.fromOffset(28, 4) or UDim2.fromOffset(4, 4),
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Quad,
+            0.2,
+            true
+        )
+        callback(enabled)
     end)
 
     return {
