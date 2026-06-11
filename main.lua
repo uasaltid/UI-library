@@ -601,7 +601,7 @@ function lib.create:dropbox(parent, items, selected:number, onchange)
 		select.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 		select.ZIndex = 4
 		select.BorderColor3 = lib.styles.dropbox.border
-		local layaut = Instance.new("UIListLayout")
+		local layout = Instance.new("UIListLayout")
 		layout.SortOrder = Enum.SortOrder.LayoutOrder
 		layout.Parent = select
 		for index, title in ipairs(items) do
