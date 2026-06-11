@@ -374,7 +374,7 @@ function lib.create:toggle(parent, enabled, callback)
     toggleBack:SetAttribute("enabled", enabled)
     toggleBack.Parent = parent.Parent or content
     toggleBack.MouseButton1Click:Connect(function ()
-        local feedback = callback(enabled)
+        local feedback = callback(not enabled)
 		if feedback == true or feedback == nil then
 	        enabled = not enabled
 	        toggleBack:SetAttribute("enabled", enabled)
