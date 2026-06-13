@@ -2,6 +2,9 @@ local HttpService = game:GetService("HttpService")
 local http = game:GetService('HttpService')
 local tweenService = game:GetService('TweenService')
 local UIS = game:GetService("UserInputService")
+local components = {
+	ColorPicker = loadstring(game:HttpGet("https://raw.githubusercontent.com/uasaltid/UI-library/refs/heads/main/components/color-picker.lua"))()
+}
 
 local lib = {}
 lib.root = ""
@@ -196,8 +199,6 @@ function lib:init(name, params)
 	close.Image = "http://www.roblox.com/asset/?id=132261474823036"
 	close.Name = "Close"
 	close.BorderSizePixel = 0
-	print(titleBar.Size.X.Offset)
-	print(titleBar.Size.Y.Offset)
 	close.Size = UDim2.fromOffset(titleBar.Size.Y.Offset, titleBar.Size.Y.Offset)
 	close.Position = UDim2.fromOffset(titleBar.Size.X.Offset - titleBar.Size.Y.Offset, 0)
 	close.MouseButton1Click:Connect(function () lib:Destroy() end) 
@@ -221,8 +222,6 @@ function lib:init(name, params)
 	minimaze.MouseLeave:Connect(function () minimaze.BackgroundTransparency = 1 end)
 
 	-- Вкладки
-	print(size.X.Offset)
-	print(size.Y.Offset)
 	local tabs = Instance.new("ScrollingFrame") 
 	tabs.Parent = main
 	tabs.Position = UDim2.new(0, 0, 0, titleBar.Size.Y.Offset)
@@ -644,12 +643,23 @@ end
 function lib.create:button(parent, text, onclick)
 	local button = Instance.new("TextButton")
 	button.Text = text
-	button.Size = UDim2.fromOffset(80, 27)
+	button.Size = UDim2.fromOffset(120, 27)
 	button.TextColor3 = lib.styles.button.textColor
 	button.BackgroundColor3 = lib.styles.button.background
 	button.Parent = parent.Parent
 	button.MouseButton1Click:Connect(onclick)
 	return parent
+end
+
+function lib.create:palette(parent, color, onchange)
+	local button = Inctance.new("TextButton")
+	button.BackgroundColor3 = color or Color3.fromRGB(255, 0, 0)
+	button.Size = UDim2.fromOffset(81, 27)
+	button.MouseButton1Click:Connect(function ()
+		local picker = components.ColorPicker.New(lib.root, { Size = 0.4, Draggable = true })
+		picker.Instance.FinishedEvent.Event:Connect(function(color) onchange(color) end)
+	end)
+	button.Parent = parent.Parent
 end
 
 function lib:Destroy()
@@ -721,4 +731,5 @@ lib.sendNotification = function (title, text, duration, btn1, btn2, callback)
 	    Callback = callback
 	})
 end
+
 return lib
