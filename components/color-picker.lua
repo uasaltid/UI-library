@@ -21,6 +21,16 @@ colorWindow.BorderColor3 = Color3.new(0.10588236153125763, 0.16470588743686676, 
 colorWindow.BorderMode = Enum.BorderMode.Outline
 colorWindow.BorderSizePixel = 0
 
+local Bindable1 = Instance.new("BindableEvent")
+Bindable1.Name = "CanceledEvent"
+Bindable1.Parent = colorWindow
+local Bindable2 = Instance.new("BindableEvent")
+Bindable2.Name = "FinishedEvent"
+Bindable2.Parent = colorWindow
+local Bindable3 = Instance.new("BindableEvent")
+Bindable3.Name = "UpdateEvent"
+Bindable3.Parent = colorWindow
+
 local uIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
 uIAspectRatioConstraint.Name = "UIAspectRatioConstraint"
 uIAspectRatioConstraint.AspectRatio = 1.1000000238418579
@@ -2096,6 +2106,13 @@ function Color:Create()
 			end)
 		end)
 	end
+	
+	-- Events
+	self.Updated = sample.UpdateEvent.Event
+	self.Finished = sample.FinishedEvent.Event
+	
+	self.Canceled = sample.CanceledEvent.Event
+	self.Cancelled = sample.CanceledEvent.Event
 	
 	-- Update visual color and transparency
 	local function _updateVisual(tab,params)
